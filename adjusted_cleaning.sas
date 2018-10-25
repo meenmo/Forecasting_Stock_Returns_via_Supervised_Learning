@@ -30,7 +30,8 @@ quit;
 *Remove symbols whose number of records is not 1762 from adjusted(originally imported dataset);
 proc sql;
 	create table adj_drop as
-		select * from adjusted where symbol in(
+		select adjusted.date, adjusted.symbol from adjusted 
+			where symbol in(
 			select symbol from valid_sym);
 quit;
 
