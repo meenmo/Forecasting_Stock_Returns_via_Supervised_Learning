@@ -1,4 +1,4 @@
-Ticker_symbol	Security	SEC_filings	GICS_Sector	GICS_Sub_Industry	Address_of_Headquarters	Date_first_added	CIK
+Ticker	Security	SEC_filings	GICS_Sector	GICS_Sub_Industry	Address_of_Headquarters	Date_first_added	CIK
 AAL	American Airlines Group	reports	Industrials	Airlines	"Fort Worth, Texas"	3/23/15	6201
 AAP	Advance Auto Parts	reports	Consumer Discretionary	Automotive Retail	"Roanoke, Virginia"	7/9/15	1158449
 AAPL	Apple Inc.	reports	Information Technology	Computer Hardware	"Cupertino, California"	11/30/82	320193
