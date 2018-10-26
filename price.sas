@@ -34,5 +34,3 @@ proc sql;
 			where symbol in(
 			select symbol from valid_sym);
 quit;
-
-
