@@ -4,33 +4,48 @@ proc import datafile = '/folders/myfolders/project/rawdata/prices-split-adjusted
  dbms = CSV
  ;
 run;
+proc import datafile = '/folders/myfolders/project/rawdata/fundamentals.csv'
+ out = fundamentals_raw
+ dbms = CSV
+ ;
+run;
+proc import datafile = '/folders/myfolders/project/rawdata/securities.csv'
+ out = securities_raw
+ dbms = CSV
+ ;
+run;
+proc import datafile = '/folders/myfolders/project/stocks.csv'
+ out = stocks
+ dbms = CSV
+ ;
+run;
 
+
+	
 *Sort imported data by symbol;
 proc sort data=adjusted;
   by symbol;
 run;
 
-*Counting symbol x date in order to sort which stock to consider for our data;
-*We need symbols(stocks) whose observation is 1762 which is total dates of the whole period;
-data count;
-  set adjusted (keep= symbol);
-  by symbol;
-  if first.symbol then count=0;
-  count+1;
-  if last.symbol then output;
-run;
-
-*Create a column for symbols whose number of records is 1762;
-proc sql;
-	create table valid_sym as
-		select symbol from count 
-		where count = 1762;		
-quit;
 
 *Remove symbols whose number of records is not 1762 from adjusted(originally imported dataset);
 proc sql;
-	create table adjusted_cleaning as
-		select adjusted.date, adjusted.symbol from adjusted 
+	create table price as
+		select adjusted.date, adjusted.symbol, adjusted.close from adjusted 
 			where symbol in(
-			select symbol from valid_sym);
+			select stocks from stocks);
+quit;
+
+proc sql;
+	create table fundamentals as
+		select * from fundamentals_raw 
+			where Ticker_Symbol in(
+			select stocks from stocks);
+quit;
+
+proc sql;
+	create table securities as
+		select * from securities_raw 
+			where Ticker_Symbol in(
+			select stocks from stocks);
 quit;
