@@ -24,7 +24,7 @@ run;
 order by ticker, drop some columns, and rename some of them*/
 proc sql;
 	create table prices as
-		select date, Ticker, close from adjusted (rename=(symbol = Ticker)) 
+		select * from adjusted (rename=(symbol = Ticker)) 
 			where Ticker in(select stocks from stocks)
 			order by Ticker;
 quit;
