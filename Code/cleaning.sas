@@ -20,8 +20,8 @@ proc import datafile = '/folders/myfolders/project/stocks.csv'
  dbms = CSV;
 run;
 
-/*Remove columns that are not contained in stocks.csv that is imported above, 
-order by ticker, drop some columns, and rename some of them*/
+/*Remove columns that are not contained in stocks.csv imported above, 
+order by ticker, and rename some of them*/
 proc sql;
 	create table prices as
 		select * from adjusted (rename=(symbol = Ticker)) 
