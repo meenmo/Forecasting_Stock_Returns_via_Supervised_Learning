@@ -33,7 +33,7 @@ proc sql;
 	create table fundamentals (drop=VAR1) as
 		select * from fundamentals_raw (rename=(Ticker_Symbol = Ticker)) 
 			where Ticker in(select stocks from stocks)
-			order by Ticker;
+			order by Date, Ticker;
 quit;
 
 proc sql;
