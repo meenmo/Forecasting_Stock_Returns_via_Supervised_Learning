@@ -26,19 +26,3 @@ df = pdr.get_data_yahoo(stock, startDate, endDate)
 ### Write to CSV
 filePath  = r"/Users/YoungFreeesh/QSTrader Data/" + fileName + ".csv"  # file path 
 df.to_csv(filePath)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
