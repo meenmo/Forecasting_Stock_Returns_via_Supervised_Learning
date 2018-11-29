@@ -7,6 +7,7 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 
+
 % Include other packages here, before hyperref.
 
 % If you comment hyperref and then uncomment it, you should delete
@@ -35,11 +36,11 @@
 \author{Samuel Ilic\\
 {\tt\small ilic@wisc.edu}
 \and
-Second Author\\
-{\tt\small secondauthor@wisc.edu}
+Meenmo Kang\\
+{\tt\small mkang84@wisc.edu}
 \and
-Third Author\\
-{\tt\small thirdauthor@wisc.edu}
+Jonathan Santoso\\
+{\tt\small jsantoso2@wisc.edu@wisc.edu}
 }
 
 \maketitle
@@ -53,28 +54,20 @@ Third Author\\
 
 %%%%%%%%% ABSTRACT
 \begin{abstract}
-   The abstract for your project goes here. The length of the abstract
-   should be between 200-250 words. Tips for writing a good abstract
-   can be found at \url{https://writing.wisc.edu/Handbook/presentations_abstracts.html}.
+We apply several machine learning models to the prediction of stock prices, specifically the price of IBM stock. Decision trees such as Random Forest, Bagging, Boosting, and Linear Regression are conducted within our research as part of a comparative analysis in an attempt to arrive at the best model. Mean square error (MSE) is used as an indicator to evaluate the accuracy of the prediction. Through this process we arrived at the best models from each method whose $R^2$ is the highest and MSE is the lowest.
+
 \end{abstract}
 
 %%%%%%%%% BODY TEXT
 \section{Introduction}
 
-This template is based on the CVPR conference template\footnote{\url{http://statcourse2018.thecvf.com/submission/main_conference/author_guidelines}}.
+A primary reason why people are more passionate about analysis in financial fields than in other areas is that it is involves massive amounts of money. Various methodologies for predicting stock market activities have been developed over a long time, particularly via quantitative analysis by mathematicians in recent years. Moreover, as computing devices and computing ability have improved, machine learning has begun to be introduced in financial analysis. Compared to traditional statistical methods, machine learning has more flexibility to approximate random movements of data.
 
-The information in this template is very minimal, and this file should serve you as a framework for writing your report. You may prefer to use a more collaboration-friendly tool while drafting the report with your class mates before you prepare the final report for submission. Remember that you should \textbf{submit both the report and code} you used for this project via Canvas. Also, \textbf{only one member per team} needs to submit the project material.
+We therefore expected to arrive at enhanced predictions through several machine learning models, representing improvements over not only existing econometric approximation but also other market prediction methods.
 
+The ultimate goal of our research is simply to find the best model to predict future stock returns. Decision trees have been selected for our research including Random Forest, Bagging, Boosting, and Linear Regression. These were highlighted in the class and we found these models to be a more viable and proper approach than other models for this case.
 
-This is an example of a mathematical equation:
-
-$$f(\mathbf{x}; \mathbf{w}) = \sum_{i=1}^{n} w_ix_i.$$
-
-This is a mathematical expression, $h(\mathbf{x}) = \hat{y}$ formatted in text. 
-
-The project report should be 6-8 pages long (not counting references)
-and should contain the sections that are already provided in this paper. Please
-check out the text in these sections for further information.
+We specified a single stock; IBM was chosen for the project. IBM has a wealth of stock data history as it was long ago listed on NSYE and its price has been fluctuating, which implies there are many predictive factors, unlike the stock of consistently skyrocketing tech companies such as the FAANG (Facebook, Amazon, Apple, Netflix and Google) group. 
 
 
 \subsection{Subsection}
