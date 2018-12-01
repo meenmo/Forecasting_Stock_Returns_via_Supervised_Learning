@@ -14,7 +14,9 @@
 % egpaper.aux before re-running latex.  (Or just hit 'q' on the first latex
 % run, let it finish, and you should be clear).
 \usepackage[breaklinks=true,bookmarks=false]{hyperref}
-
+\usepackage{lipsum}
+\usepackage{caption}
+\captionsetup[figure]{labelformat=empty}
 
 \statcoursefinalcopy
 
@@ -79,50 +81,33 @@ main sections. This is an example of a subsection.
 
 \section{Related Work}
 
-Related work should be discussed here. This is an example of a citation \cite{mirjalili2018gender}. To format the citations properly, put the
-corresponding references into the bibliography.bib file. You can obtain
-BibTeX-formatted references for the "bib" file from Google Scholar 
-(\url{https://scholar.google.com}), for example, by clicking on the 
-double-quote character under a citation and then selecting \mbox{"BibTeX"} as
-shown in Figure \ref{fig:google-scholar-1col} and 
-Figure \ref{fig:google-scholar-2col}.
-
-\begin{figure}[t]
-\begin{center}
-   \includegraphics[width=0.8\linewidth]{Figures/google-scholar.pdf}
-\end{center}
-   \caption{Example illustrating how to get BibTeX references from
-   Google Scholar as a 1-column figure.}
-\label{fig:google-scholar-1col}
+\begin{figure}[!h]
+    \caption{Confusion Matrix}
+	\centering
+	\begin{minipage}[t]{4cm}
+		\centering
+		\includegraphics[scale=0.24]{Plots/CM_rf.png}
+%		\caption{Random Forest}
+	\end{minipage}
+	\begin{minipage}[t]{4cm}
+		\centering
+		\includegraphics[scale=0.24]{Plots/CM_bagging.png}
+%		\caption{Bagging}
+	\end{minipage}
+	
+	\begin{minipage}[t]{4cm}
+		\centering
+		\includegraphics[scale=0.24]{Plots/CM_boosting.png}
+%		\caption{Boosting}
+	\end{minipage}
+	\begin{minipage}[t]{4cm}
+		\centering
+		\includegraphics[scale=0.24]{Plots/CM_lr.png}
+%		\caption{Linear Regression}
+	\end{minipage}
 \end{figure}
 
-
-\begin{figure*}
-\begin{center}
-   \includegraphics[width=0.8\linewidth]{Figures/google-scholar.pdf}
-\end{center}
-   \caption{Example illustrating how to get BibTeX references from
-   Google Scholar as a 2-column figure.}
-\label{fig:google-scholar-2col}
-\end{figure*}
-
-Table \ref{tab:some-table} shows an example for formatting a table.
-
-\begin{table}
-\begin{center}
-\begin{tabular}{|l|c|}
-\hline
-Method & Accuracy \\
-\hline\hline
-Method 1 & $70 \pm 3$ \% \\
- Method 2 & $76 \pm 3$ \% \\
-\hline
-\end{tabular}
-\end{center}
-\label{tab:some-table}
-\caption{This is an example of a table.}
-\end{table}
-
+\end{document}
 
 \section{Proposed Method}
 
