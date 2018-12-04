@@ -150,7 +150,22 @@ In order to avoid look-ahead bias (data leakage) while training our models, we c
 
 TimeSeriesSplit was used for both parameters tuning as well as forecasting returns. But first, we split our data, X & y, into training-validation and test sets. This split was chosen to be the beginning of 2018. This was done for the purpose of imagining we are at the end of 2017 and was want to train a model to forecast returns for 2018. Hence, our training-validation set included data from 01/01/2002 - 12/31/2017 & our test set included data from 01/01/2018 - 10/31/2018. Within the training-validation set, we used TimeSeriesSplit to train our model. Then, in our test set, we again used TimeSeriesSplit to test our model's performance. This was done under the idea that we wanted to use the most up-to-date model which was trained on all available data to make our predictions. For example, if we are forecasting returns for October 2018 it would make sense to use the best model which was trained on all available data rather than one which was only trained using data prior to 2018. The use of TimeSeriesSplit means that our training and test set performance is directly related to our chosen number of train/test splits. Hence, the larger our train/test splits, we are able to train more models on more data and obtain increase out-of-sample performance. However, the downside to increasing the number of train/test splits is the increasing time complexity of the model. As a result, we settled at using only 10 train/test splits for both our train-validation and test sets. 
 
-$$\graphi$$
+\begin{figure}
+  \includegraphics[height=2.5cm, width=8.5cm]{Plots/Figure2.png}
+  \caption{{\bf Figure 2}: TimeSeriesSplit for both Hyperparameter Tuning and Forecasting}
+\end{figure}
+
+\paragraph{Parameter Tuning}
+Recall that the models we are implementing include Random Forest, Bagging, Boosting, and Linear Regression. We chose to implement four different models for the purpose of our analysis to determine which, if any, can generate positive predictive performance. To make the parameter tuning process as simple as possible, we created wrapper functions for each model such that it would also execute TimeSeriesSplit. We set the parameters of each wrapper function to determine both the hyperparameters of each model as well as the number of train-validation splits which will be executed in the TimeSeriesSplit. At the beginning of each wrapper function, we would initialize an empty list to for our computed R-squared and MSE values. We would then divide the total training set into train-validation splits and loop through each one. Each model would be fitted on the training set and would be tested/make predictions on the validation set.
+
+In order to fit the best model, our objective was to obtain the largest R-squared as well as the smallest MSE. We believe the most important choice in optimizing our models came from how we settled on the best R-squared and MSE’s. Note that if we simply selected the model with the largest R-squared on the final validation set, then our model has likely overfitted our data and it will not generalize well on the test set. To combat this issue, we decided that the best model was the one the one with the largest average R-squared and the smallest average MSE across all the validation sets. Hence, we would select the model with the best average performance across the entire validation set. We believed that this model would generalize to unseen data and have the best out-of-sample forecasts. At this point, we were still uncertain to whether R-squared or MSE was the best performance evaluation metric. So, we decided to optimize each model separately according to both. 
+
+Perhaps the most important hyperparameter for each ensemble technique is the total number of estimators. This was the first hyperparameter we tuned was done on the base decision tree model with all default settings and can be seen in Figure 3. We determined that the optimal number of estimators for each ensemble method was 150. At this point and increase in the number of estimators only leads to marginal increases in performance but leads to increased computational complexity. For all other parameters in each model, we applied a grid search. The hyperparameters we chose to evaluate were the minimum number of samples required to split a node, the max depth of the decision tree, the maximum number of features to consider for each split and the learning rate for a boosting.
+
+\begin{figure}
+  \includegraphics[height=2.5cm, width=8.5cm]{Plots/c.png}
+  \caption{{\bf Figure 2}: TimeSeriesSplit for both Hyperparameter Tuning and Forecasting}
+\end{figure}
 
 \section{Experiments}
 
