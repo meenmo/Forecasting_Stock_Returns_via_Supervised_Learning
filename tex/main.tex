@@ -8,6 +8,7 @@
 \usepackage{amssymb}
 \usepackage{booktabs}
 \usepackage{tabularx}
+\usepackage{hyperref}
 
 % Include other packages here, before hyperref.
 
@@ -17,6 +18,8 @@
 \usepackage[breaklinks=true,bookmarks=false]{hyperref}
 \usepackage{lipsum}
 \usepackage{caption}
+\usepackage{multicol}
+
 \captionsetup[figure]{labelformat=empty}
 
 \statcoursefinalcopy
@@ -45,6 +48,19 @@ Meenmo Kang\\
 Jonathan Santoso\\
 {\tt\small jsantoso2@wisc.edu}
 }
+\setlength\parindent{0pt}
+\setlength{\parskip}{\baselineskip}%
+\setlength{\parindent}{0pt}%
+
+
+\makeatletter
+\renewcommand\paragraph{%
+    \@startsection{paragraph}{4}{0mm}%
+       {-\baselineskip}%
+       {.001\baselineskip}%
+       {\normalfont\normalsize\bfseries}}
+\makeatother
+ 
 
 \maketitle
 %\thispagestyle{empty}
@@ -71,16 +87,7 @@ In our analysis, we implement four different supervised machine learning models 
 For each of our four models, we will optimize them across two different performance metrics, namely MSE and R-squared. The idea here is that MSE is the standard performance metric for regression and continuous forecasts. However, R-squared has been proposed within the financial community to be a more useful measure of performance when forecasting stock returns. As a result, both methods are implemented in order to see, empirically, which generalizes best on unseen data. 
 
  With the benefit of hindsight, we know that certain stocks are easier to forecast than others. For example, Amazon’s stock price has skyrocketed over the past 16 years, and as a result, even a linear model would generate positive predictive performance. However, for the purpose of investing, we have no idea ahead of time if Amazon or any other stock will go up down or sideways. In addition, IBM’s price has shown a high degree of variability over our sample period which indicates that it’s a very difficult stock to predict. For these reasons, we chose IBM because we won’t fall into the trap tricking ourselves into thinking we build a predictive model by selecting an easy stock such as Amazon.
-
-
-
-\subsection{Subsection}
-
-You can use paragraphs or subsections to further structure your
-main sections. This is an example of a subsection.
-
-\paragraph{This is a paragraph title.} This is an example of a paragraph.
-
+ 
 \section{Related Work}
 Forecasting stock returns traditionally come in two basic forms. The first form is about predicting the difference in expected returns using a stock's fundamentals. Typically this is done via cross-sectional regressions and was popularized by Fama and French (1992). The second form focuses on forecasting time series regression returns using macroeconomic predictor variables. Note that these traditional methods have become rather antiquated and are no longer used in practice due to their inability to scale with increasing data. As a result, researchers have turned to machine learning in order to better handle the continuously increasing number of predictor variables. Machine learning has also been used to more efficiently and accurately price financial derivatives. However, the use of machine learning in forecasting stock returns, at least in academia, is relatively recent whereas hedge funds have likely been implementing it in secret for years. With respect to the use of decision trees in forecasting returns, Moritz and Zimmermann (2016) provide a great overview. In addition, there are other papers such a Gu, Kelly, and Xiu (2018) which provides a broad summary and comparative analysis of numerous machine learning methods. They find that regression trees and neural networks have the best out-of-sample predictive performance. This finding was the principal reason we decided to implement regression trees as opposed to an alternative method. They also propose that using R-squared rather than MSE is the new standard for accurately measuring and out-of-sample return prediction and training the model. Following the advice of Gu, Kelly, and Xiu (2018) we decided to begin our analysis using regression trees and were trained using R-squared as our measure of accuracy. With this in mind, our analysis varies significantly as we only focus on regression trees applied to a single stock whereas Gu, Kelly, and Xiu (2018) implement numerous machine learning algorithms to a portfolio of stocks on a much larger dataset going all the way back to 1960. 
 
@@ -89,12 +96,13 @@ Forecasting stock returns traditionally come in two basic forms. The first form 
 
 \section{Proposed Method \& Experiments}
 \paragraph{Clean Data & Create Technical Indicator Variables} 
+
 Any and all data used in our analysis was pulled directly from the Yahoo finance API via pandas-datareader in Python. As previously mentioned, we only gathered IBM data from January 1, 2002, to October 31, 2018. This is because, prior to 2002, the stock market had not yet converted to decimal prices and all stocks were priced in fractional increments of 1/16. This paved the way for high-frequency trading and sub-penny quoting of prices thus causing the market to behave radically different before and after 2002. Without getting into the weed’s, the decimalization of stock prices made the market more efficient and led to tighter bid-ask spreads. Therefore, time series return forecasting models which use data prior to 2002 must account for the decimalization of prices or otherwise they risk optimistic bias in their results. For simplicity, we decided to ignore all data prior to 2002. 
 
 Typically daily stock data from Yahoo finance is quoted in what is called OHLCV data. What this means is that our daily data came in the form as displayed in Table 1. The Date, Open, High, Low, and Close columns are all self-explanatory and relate to IBM’s share price for the current day. Note that Volume indicates the total number of shares traded on any given day. This is an important column because it indicates how popular a stock it. Large spikes in trading volume can indicate that IBM’s price is going to either fall or rise whereas low volume indicates that a stocks price will go sideways (price will remain stable). Lastly, the most important column is Adj Close. Often times, mature corporations such as IBM issue stock splits, stock buybacks, and dividends. Each of these actions can cause stocks price to decrease dramatically. For example, if IBM only has 100 shares and issues 100 new shares, then each share now becomes half as valuable and the stock price drops by a half. Thus, the Adjusted Close column takes these corporate actions into account and makes sure that the reported price only reflects trading activity. 
 
 
-\begin{table}
+\begin{table}[h]
 \resizebox{8cm}{!}{%
 \begin{tabular}{llrrrrrr}
 \toprule
@@ -150,7 +158,7 @@ In order to avoid look-ahead bias (data leakage) while training our models, we c
 
 TimeSeriesSplit was used for both parameters tuning as well as forecasting returns. But first, we split our data, X & y, into training-validation and test sets. This split was chosen to be the beginning of 2018. This was done for the purpose of imagining we are at the end of 2017 and was want to train a model to forecast returns for 2018. Hence, our training-validation set included data from 01/01/2002 - 12/31/2017 & our test set included data from 01/01/2018 - 10/31/2018. Within the training-validation set, we used TimeSeriesSplit to train our model. Then, in our test set, we again used TimeSeriesSplit to test our model's performance. This was done under the idea that we wanted to use the most up-to-date model which was trained on all available data to make our predictions. For example, if we are forecasting returns for October 2018 it would make sense to use the best model which was trained on all available data rather than one which was only trained using data prior to 2018. The use of TimeSeriesSplit means that our training and test set performance is directly related to our chosen number of train/test splits. Hence, the larger our train/test splits, we are able to train more models on more data and obtain increase out-of-sample performance. However, the downside to increasing the number of train/test splits is the increasing time complexity of the model. As a result, we settled at using only 10 train/test splits for both our train-validation and test sets. 
 
-\begin{figure}
+\begin{figure}[h]
   \includegraphics[height=2.5cm, width=8.5cm]{Plots/Figure2.png}
   \caption{{\bf Figure 2}: TimeSeriesSplit for both Hyperparameter Tuning and Forecasting}
 \end{figure}
@@ -163,72 +171,187 @@ In order to fit the best model, our objective was to obtain the largest R-square
 Perhaps the most important hyperparameter for each ensemble technique is the total number of estimators. This was the first hyperparameter we tuned was done on the base decision tree model with all default settings and can be seen in Figure 3. We determined that the optimal number of estimators for each ensemble method was 150. At this point and increase in the number of estimators only leads to marginal increases in performance but leads to increased computational complexity. For all other parameters in each model, we applied a grid search. The hyperparameters we chose to evaluate were the minimum number of samples required to split a node, the max depth of the decision tree, the maximum number of features to consider for each split and the learning rate for a boosting.
 
 \begin{figure}
-  \includegraphics[height=2.5cm, width=8.5cm]{Plots/c.png}
-  \caption{{\bf Figure 2}: TimeSeriesSplit for both Hyperparameter Tuning and Forecasting}
+  \includegraphics[height=7cm, width=8.5cm]{Plots/Comparison.png}
+  \caption{{\bf Figure 3}: Selecting the Total Number of Estimators for each Ensemble Method}
 \end{figure}
 
-\section{Experiments}
+\paragraph{Software}
+\begin{itemize}
+    \item Python
+    \begin{itemize}
+        \item ML: Scikit-Learn, MLxtend
+        \item Visualization: Matplotlib, Seaborn
+        \item Others: SciPy, NumPy, Pandas
+    \end{itemize}
+    
+    \item Primary Working Environment
+\begin{multicols}{2}
+\begin{itemize}
+\item Jupyter
+\item Anaconda
 
-Describe the experiments you performed. You may want to create separate
-subsections to further structure this section.
+\end{itemize}
+\end{multicols}
+    
+    \item GitHub\\ \url{ https://github.com/meenmo/Forecasting_Stock_Returns_via_Supervised_Learning}
+\end{itemize}
 
-\subsection{Dataset}
+\section{Results & Discussion}
 
-Briefly describe your dataset in a separate subsection.
+\begin{figure}[htb]
+    \begin{minipage}[t]{.3\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{Plots/Best_Model_RF.png}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{.3\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{Plots/Best_Model_Bagging.png}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{.3\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{Plots/Best_Model_Boosting_2.png}
+    \end{minipage}  
+    \label{fig:1-2-3}
+    \caption{{\bf Figure 4}: Optimal Hyperparameters for Each Algorithm}
+
+\end{figure}
+The heatmap graphics above depicted the optimal hyperparameter of each algorithm in the validation data set found through grid search utilizing the time series split with 10 folds, where the x-axis is the maximum depth of the tree, and the y-axis is the minimum samples of the tree in order to split. It can be observed in general that as max depth increase and min sample leaf decrease, the algorithm will tend to overfit which results in a decreased performance in the testing dataset. Thus we have to figure out best performing hyperparameters as deep as possible but as many as minimum sample leaves at the same time. For Adaboost, we also varied learning rate in order to penalize overfitting of the algorithms. For linear regression, there is no hyperparameter as the algorithm tries to minimize loss function. As a result., we discovered that the optimal hyper parameters for each model as follows. 
+
+\begin{table}[h]
+\resizebox{8cm}{!}{%
+\begin{tabular}{llrrrrrr}
+\toprule
+&    Random Forest &    Bagging &   AdaBoost (with rate 1.0) \\
+\midrule
+Max Depth &  15 &  15 &  5 \\
+Min Sample Split &  10 &  10 &  5 \\
+\bottomrule
+\end{tabular}}
+\caption{Optimal Hyperparametersof Each Model}
+\end{table}
+
+After optimal hyperparameters were obtained, each of the optimal models were trained with the testing dataset, of which the results are summarized in the tables below. There shows that most of the algorithm except boosting produced negative $R^2$ values which means that the algorithm is predicting worse than the mean stock returns in the testing set. Linear regression produced the worst prediction due to its complexity. However, AdaBoost algorithm performed best resulting in $R^2$ values of 0.06\%. This positive $R^2$ is hard to obtain due to the random nature of stock returns and its difficulty to predict the market. Even though 0.06 for $R^2$ cannot be told that the model functions well enough for prediction, we just highly value its positivity implying better than average stock return. 
+
+\begin{table}[h]
+\resizebox{8cm}{!}{%
+\begin{tabular}{llrrrrrr}
+\toprule
+&    Random Forest &    Bagging &   Boosting & Linear Regression \\
+\midrule
+$R^2$ &-0.100561&-0.0414371&0.00634&-0.26312\\
+MSE &1.17259&1.1096&1.05866&1.34579 \\
+\bottomrule
+\end{tabular}}
+\caption{Final Predictions}
+\end{table}
 
 
-\subsection{Software}
-
-Briefly list (and cite) software software you used.
-
-\subsection{Hardware}
-
-If relevant, list hardware resources you used.
-
-
-\section{Results and Discussion}
-
-\begin{figure}[!h]
-    \caption{Confusion Matrix}
-	\centering
-	\begin{minipage}[t]{4cm}
-		\centering
-		\includegraphics[scale=0.31]{Plots/CM_rf.png}
-	\end{minipage}
-	\begin{minipage}[t]{4cm}
-		\centering
-		\includegraphics[scale=0.31]{Plots/CM_bagging.png}
-	\end{minipage}
-	
-	\begin{minipage}[t]{4cm}
-		\centering
-		\includegraphics[scale=0.31]{Plots/CM_boosting.png}
-	\end{minipage}
-	\begin{minipage}[t]{4cm}
-		\centering
-		\includegraphics[scale=0.31]{Plots/CM_lr.png}
-	\end{minipage}
+\begin{figure}[h]
+  \includegraphics[height=6cm, width=8cm]{MSE_R2_linear_pred.jpg}
+  \caption{{\bf Figure 4}: $R^2$\& MSE of Final Test Prediction}
 \end{figure}
 
-\section{Conclusions}
+In addition to predicting returns which might be a too difficult for a project for college students, we also took the stock return predictions and classified them into binary predictions. The binary prediction are 0 if our algorithm predicted stock returns to go down tomorrow, and 1 if the stock returns goes up tomorrow. 
 
-Describe your conclusions here. If there are any future directions, you can
-describe them here, or you can create a new section for future directions.
+Throughout the same prediction, the results of the binary classification can be summarized as confusion matrix below. We could observe that random forest algorithm performs better in this case. This means that even though random forest was one of the worst algorithm when predicting returns, it actually predicted when the stock goes up or down more correctly more often than other algorithms. The other impressive finding from the binary prediction is that all of all four algorithm have the over 50\% accuracy. However, considering the fact that a single percent matters in practice where billions of billions dollar transact every day, these result are not trivial.
 
-\section{Acknowledgements}
+\begin{figure}[h]
+  \includegraphics[height=8.5cm, width=8.5cm]{Plots/ConfusionMatrix.png}
+  \caption{{\bf Figure 5}: Confusion Matrices for Binary Prediction}
+\end{figure}
 
-List acknowledgements if any. For example, if someone provided you a dataset, or
-you used someone else's resources, this is a good place to acknowledge
-the help or support you received.
+\begin{table}[h]
+\resizebox{8cm}{!}{%
+\begin{tabular}{llrrrrrr}
+\toprule
+&    Random Forest &    Bagging &   Boosting & Linear Regression \\
+\midrule
+Accuracy &55.23\% &54.29\% &53.33\% &52.38\%\\
+
+\bottomrule
+\end{tabular}}
+\caption{Binary Prediction Accuracy}
+\end{table}
+
+
+Additionally, we also utilized min/max scaler in order to obtain probabilities of stock returns going up or down tomorrow. This results in a ROC plot where the area under the curve is a metric to classify the best algorithm. However, when utilizing this metric, bagging performs best.
+It is hard to define the reason why bagging produced the best figure in ROC due to its complexity and small margin of each AUC. Anyhow, all four algorithms produced better prediction than random, or 50\%, which is good considering the fact that randomness of stock price. We also made sure that all the testing set have balanced 0 and 1. 
+
+\begin{figure}[h]
+  \includegraphics[height=6cm, width=8cm]{Plots/ROC_Curve_1.png}
+  \caption{{\bf Figure 6}: ROC Curve}
+\end{figure}
+
+
+\section{Conclusion}
+
+In this paper, we implemented a comparative analysis of Bagging, Random Forest, Boosting, and Multivariate Linear Regression in order to determine the best model for the purpose of forecasting IBM’s daily stock returns. At the highest level, we find that all of our ensemble methods add significant predictive performance over a simple multivariate linear regression. In addition, we find that standard dimensionality reduction techniques such as PCA and LASSO reduce the out-of-sample performance across all our ensemble methods. This is likely due to the fact that both methods reduce the dimensionality of the original dataset prior to forecasting and thus pay no consideration to how the predictors are associated with future returns. We could improve upon this issue in further analysis by using an alternative dimensionality reduction technique such as Partial Least Squares which explicitly accounts for covariance between the predictor variables and the variable which is being forecasted. We also find that tuning our supervised learning models according to R-squared led to improved predictive performance over tuning via MSE. Lastly, our Boosting regression tree had the best out-of-sample predictive performance with a positive R-squared of .06\% whereas all other models had a negative R-squared. Our positive predictive performance indicates IBM’s stock is not efficient and does not reflect all publicly available information. 
+
+There are many ways in which our project could have been improved. For further analysis, one could improve the breadth of the dataset beyond technical indicators to also include other significant financial factors. In addition, we only explored the process of pre-pruning, however, a more sophisticated post-pruning method such as cost-complexity pruning could also be employed. And lastly, the implementation of an alternative dimensionality reduction technique such as Partial Least Squares has the potential to significantly improve our predictive performance as well as decrease computational complexity. 
+
 
 \section{Contributions}
+{\bf Samuel Ilic (Supreme Leader)}: Analyzed and gave financial background to all team members. Was involved in coordination and managing the project and also lead data collection and cleaning. In addition, Sam focused on dimensionality reduction, training & tuning of all models, interpreting results, organizing the presentation, and writing the final report.
 
-Describe the contributions of each team member who worked on this project.
+{\bf Meenmo Kang (Data Wizard)}: was primarily responsible for data cleaning and data visualization. Meenmo also focused on initial analysis to identify potential outlier points and exclude them from our analysis. Further feature engineering from base dataset was done by Meenmo and Jonathan.
+
+{\bf Jonathan Santoso (Model Ninja)}: Created lagged stock return features, helped out in the selection of machine learning algorithm, and hyperparameter tuning via grid-search. Moreover, Jonathan was involved in determining cross-validation splits and also helped out with the interpretation of results.
 
 
-{\small
-\bibliographystyle{ieee}
-\bibliography{bibliography.bib}
-}
+
+\newpage
+\onecolumn
+\section{Work Cited}
+\begin{enumerate}
+    \item Fama and French (1992) - The Cross-Section of Expected Stock Returns
+    
+    \item Moritz and Zimmermann (2016) - Tree-Based Conditional Portfolio Sorts: The Relation between Past and Future Stock Returns
+    
+    \item Gu, Kelly, and Xiu (2018) - Empirical Asset Pricing via Machine Learning
+    
+    \item Peter Bakker (2018) - Technical analysis Indicators without Talib\\ \url{https://www.quantopian.com/posts/technical-analysis-indicators-without-talib-code}
+
+    \item Pandas Technical Indicators: technical indicators.py \url{https://github.com/Crypto-toolbox/pandas-technical-indicators/blob/master/technical_indicators.py}
+    
+    \item Visualizing cross-validation behavior in Scikit-learn\\  \url{https://scikit-learn.org/stable/auto_examples/model_selection/plot_cv_indices.html#sphx-glr-auto-examples-model-selection-plot-cv-indices-py}
+    
+    \item TimeSeriesSplit\\  \url{https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.TimeSeriesSplit.html}
+    
+    \item Yahoo Finance -  \url{https://finance.yahoo.com/quote/IBM}
+    
+    \item Investopedia \\  \url{https://www.investopedia.com/terms/d/decimal-trading.asp}
+    
+    \item Technical Indicators \\ \url{https://www.investopedia.com/terms/t/technicalindicator.asp}
+    
+    \item Avoiding Data Leakage \\  \url{https://conlan.io/blog/data-science/avoiding-data-leakage-machine-learning/}
+    
+    \item Python - Python Software Foundation. Python Language Reference, version 3.6. Available at  \url{http://www.python.org}
+    
+    \item Scikit-Learn - Scikit-learn: Machine Learning in Python, Pedregosa et al., JMLR 12, pp. 2825-2830, 2011
+    
+    \item SciPy - Jones E, Oliphant E, Peterson P, et al. SciPy: Open Source Scientific Tools for Python, 2001-, \url{http://www.scipy.org/}
+    
+    \item Pandas - Wes McKinney. Data Structures for Statistical Computing in Python, Proceedings of the 9th Python in Science Conference, 51-56 (2010) (publisher link)
+    
+    \item NumPy - Travis E, Oliphant. A guide to NumPy, USA: Trelgol Publishing, (2006).
+    
+    \item Matplotlib - John D. Hunter. Matplotlib: A 2D Graphics Environment, Computing in Science & Engineering, 9, 90-95 (2007), DOI:10.1109/MCSE.2007.55 (publisher link)
+    
+    \item MLxtend - Raschka, Sebastian (2018) MLxtend: Providing machine learning and data science utilities and extensions to Python's scientific computing stack. J Open Source Softw 3(24).
+    
+    \item TimeSeriesSplit Picture \\ \url{https://medium.com/cindicator/backtesting-time-series-models-weekend-of-a-data-scientist-92079cc2c540} 
+    
+    \item How To Backtest Machine Learning Models for Time Series Forecasting \\
+    \url{https://machinelearningmastery.com/backtest-machine-learning-models-time-series-forecasting/}
+\end{enumerate}
+
+
+
+% {\small
+% \bibliographystyle{ieee}
+% \bibliography{bibliography.bib}
+% }
 
 \end{document}
