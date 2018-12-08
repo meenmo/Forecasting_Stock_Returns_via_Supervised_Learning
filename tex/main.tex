@@ -9,6 +9,8 @@
 \usepackage{booktabs}
 \usepackage{tabularx}
 \usepackage{hyperref}
+\usepackage{wrapfig}
+
 
 % Include other packages here, before hyperref.
 
@@ -19,6 +21,7 @@
 \usepackage{lipsum}
 \usepackage{caption}
 \usepackage{multicol}
+\usepackage{kantlipsum}
 
 \captionsetup[figure]{labelformat=empty}
 
@@ -28,6 +31,29 @@
 %-------------------------
 %\usepackage[margin=0.8in]{geometry}
 %-------------------------
+
+
+
+
+\newcommand\myfigure[5]{%
+  \ifdim#2>.8\linewidth
+    {%
+      \centering
+      \includegraphics[width=#3]{#4}%
+      \captionof{figure}{#5}%
+    }%
+  \else
+  \begin{wrapfigure}{#1}{#2}
+    \includegraphics[width=#3]{#4}
+    \caption{#5}
+  \end{wrapfigure}
+  \fi
+}
+
+
+
+
+
 
 
 \setcounter{page}{1}
@@ -166,7 +192,7 @@ In order to fit the best model, our objective was to obtain the largest R-square
 Perhaps the most important hyper-parameter for each ensemble technique is the total number of estimators. This was the first hyper-parameter we tuned was done on the base decision tree model with all default settings and can be seen in Figure 3. We determined that the optimal number of estimators for each ensemble method was 150. At this point and increase in the number of estimators only leads to marginal increases in performance but leads to increased computational complexity. For all other parameters in each model, we applied a grid search. The hyper-parameters we chose to evaluate were the minimum number of samples required to split a node, the max depth of the decision tree, the maximum number of features to consider for each split and the learning rate for a boosting.
 
 \begin{figure}
-  \includegraphics[height=7cm, width=8.5cm]{Plots/Comparison.png}
+  \includegraphics[height=5.5cm, width=6.5cm]{Plots/Comparison.png}
   \caption*{Figure 3: Selecting the Total Number of Estimators for each Ensemble Method}
 \end{figure}
 
@@ -193,25 +219,27 @@ Perhaps the most important hyper-parameter for each ensemble technique is the to
 
 \section{Results \& Discussion}
 
-\begin{figure}[htb]
-    \begin{minipage}[t]{.35\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{Plots/Best_Model_RF.png}
-    \end{minipage}
-    \hfill
-    \begin{minipage}[t]{.35\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{Plots/Best_Model_Bagging.png}
-    \end{minipage}
-    \hfill
-    \begin{minipage}[t]{.35\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{Plots/Best_Model_Boosting_2.png}
-    \end{minipage}  
-    \label{fig:1-2-3}
-    \caption{Figure 4: Optimal Hyper-parameters for Each Algorithm}
+% \begin{figure}[htb]
+%     \caption{Figure 4: Optimal Hyper-parameters for Each Algorithm}
+%     \begin{minipage}[t]{.2\textwidth}
+%         %\centering
+%         \includegraphics[width=\textwidth]{Plots/Best_Model_RF.png}
+%     \end{minipage}
+%     \begin{minipage}[t]{.2\textwidth}
+%         %\centering
+%         \includegraphics[width=\textwidth]{Plots/Best_Model_Bagging.png}
+%     \end{minipage}
+%     \hfill
+%     \begin{minipage}[t]{.2\textwidth}
+%         \centering
+%         \includegraphics[width=\textwidth]{Plots/Best_Model_Boosting_2.png}
+%     \end{minipage}  
+%     \label{fig:1-2-3}
+% \end{figure}
 
-\end{figure}
+
+\myfigure{L}{.5\linewidth}{\linewidth}{Plots/Best_Model_RF.png}{}
+
 Through utilizing a 10 fold TimeSeriesSplit and storing the resulting predictions on the validation set, we were able to obtain our baseline MSE and R-squared values. Note that these baseline values were computed by taking the average MSE & R-squared values across all 10 TimeSeriesSplits. In order to improve upon our baseline models, we conducted hyperparameter tuning on the minimum samples split and the maximum depth parameters. The heat map in Figure 4 depicts the optimal hyperparameters for each of our ensemble algorithms on the validation set. It can be observed, in general, that as the maximum depth of the decision tree increases and as minimum sample leaf decreases, the algorithms will tend to overfit. This results in an optimistic training-validation set performance and decreased generalization performance on the test set. Thus, in order to obtain the best performing model, we need to determine both the optimal tree depth as well as the minimum sample leaves at the same time. With respect to Adaboost, we also chose to vary the learning rate to penalize our model against overfitting. For Linear Regression, there are no hyperparameters to optimize as there exists a closed form solution.
 
 
